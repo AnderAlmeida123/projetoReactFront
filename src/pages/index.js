@@ -1,20 +1,55 @@
 import Head from "next/head";
-import Image from "next/image";
-import localFont from "next/font/local";
-import styles from "@/styles/Home.module.css";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+import { useState } from "react";
+import axios from "axios";
+import Link from "next/link";
+import { useEffect } from "react";
 
 export default function Home() {
+  //declara a variavel para recever os registros retornados da api.
+  const [data, setData] = useState([]);
+  //declara a variavel para recever o numero de paginas
+  const [page, setPage] = useState("");
+  //declara a variavel para recever o numero da ultima pagina
+  const [lastPage, setLastPage] = useState("");
+  //declara a variavel para receber a mensagem
+  const [message, setMessage] = useState("");
+
+  //cria a função com requisiçao para api recuperar usuarios
+  const getUsers = async (page) => {
+    //verifica se o parametro é indefinido, caso seja, atribuir a pagina 1.
+    if (page === undefined) {
+      page = 1;
+    }
+    setPage(page);
+
+    //realiza a requisição para api com axios para a rota listar usuarios.
+    await axios
+      .get("http://localhost:8080/users?page=" + page)
+      //acessa o then quando a api retornar status 200
+      .then((response) => {
+        //atribui os registros no state data
+        setData(response.data.users);
+        //atribui a ultima pagina
+        setLastPage(response.data.pagination.lastPage);
+      })
+      //acessa  o catch quando a api retornar erro
+      .catch((err) => {
+        if (err.response) {
+          //atribui a mensagem no state message
+
+          setMessage(err.response.data.mensagem);
+        } else {
+          //atribui a mensagem no state message
+          setMessage("Erro: tente mais tarde.");
+        }
+      });
+  };
+
+  //useEffect é usado para lidar com efeitos colaterais em um componente. por exemplo, o estado do componetente, fazer chamada a apis, manipular eventos entre outros.
+  useEffect(() => {
+    getUsers();
+  }, []);
+
   return (
     <>
       <Head>
@@ -23,96 +58,69 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div
-        className={`${styles.page} ${geistSans.variable} ${geistMono.variable}`}
-      >
-        <main className={styles.main}>
-          <Image
-            className={styles.logo}
-            src="https://nextjs.org/icons/next.svg"
-            alt="Next.js logo"
-            width={180}
-            height={38}
-            priority
-          />
-          <ol>
-            <li>
-              Get started by editing <code>src/pages/index.js</code>.
-            </li>
-            <li>Save and see your changes instantly.</li>
-          </ol>
-
-          <div className={styles.ctas}>
-            <a
-              className={styles.primary}
-              href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Image
-                className={styles.logo}
-                src="https://nextjs.org/icons/vercel.svg"
-                alt="Vercel logomark"
-                width={20}
-                height={20}
-              />
-              Deploy now
-            </a>
-            <a
-              href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.secondary}
-            >
-              Read our docs
-            </a>
+      <main>
+        <Link href={"/cadastrar"}>
+          <button type="button">Cadastrar</button>
+        </Link>
+        <h2>Listar Usuário</h2>
+        {message ? <p>{message}</p> : ""}
+        {data.map((user) => (
+          <div key={user.id}>
+            <spam>ID: {user.id}</spam>
+            <br />
+            <spam>Nome: {user.name}</spam>
+            <br />
+            <spam>E-mail: {user.email}</spam>
+            <br />
+            <Link href={`/visualizar/${user.id}`}>
+              <button type="button">Visualizar</button>
+            </Link>{" "}
+            <Link href={`/editar/${user.id}`}>
+              <button type="button">Editar</button>
+            </Link>{" "}
+            <button type="button">Apagar</button> <hr />
+            <br />
+            <hr />
           </div>
-        </main>
-        <footer className={styles.footer}>
-          <a
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              aria-hidden
-              src="https://nextjs.org/icons/file.svg"
-              alt="File icon"
-              width={16}
-              height={16}
-            />
-            Learn
-          </a>
-          <a
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              aria-hidden
-              src="https://nextjs.org/icons/window.svg"
-              alt="Window icon"
-              width={16}
-              height={16}
-            />
-            Examples
-          </a>
-          <a
-            href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              aria-hidden
-              src="https://nextjs.org/icons/globe.svg"
-              alt="Globe icon"
-              width={16}
-              height={16}
-            />
-            Go to nextjs.org →
-          </a>
-        </footer>
-      </div>
+        ))}
+        {page !== 1 ? (
+          <button type="button" onClick={() => getUsers(1)}>
+            Primeira
+          </button>
+        ) : (
+          <button type="button" disabled>
+            Primeira
+          </button>
+        )}{" "}
+        {page !== 1 ? (
+          <button type="button" onClick={() => getUsers(page - 1)}>
+            {page - 1}
+          </button>
+        ) : (
+          ""
+        )}{" "}
+        <button type="button" disabled>
+          {page}
+        </button>{" "}
+        {page + 1 <= lastPage ? (
+          <button type="button" onClick={() => getUsers(page + 1)}>
+            {page + 1}
+          </button>
+        ) : (
+          ""
+        )}{" "}
+        {page !== lastPage ? (
+          <button type="button" onClick={() => getUsers(lastPage)}>
+            Última
+          </button>
+        ) : (
+          <button type="button" disabled>
+            Última
+          </button>
+        )}{" "}
+        <br />
+        <br />
+      </main>
     </>
   );
 }
