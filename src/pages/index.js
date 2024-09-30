@@ -3,6 +3,9 @@ import { useState } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { useEffect } from "react";
+import { servDelete } from "@/services/servDelete";
+import "bootstrap/dist/css/bootstrap.css";
+import { Navbar, Container, Nav, Form } from "react-bootstrap";
 
 export default function Home() {
   //declara a variavel para recever os registros retornados da api.
@@ -24,10 +27,11 @@ export default function Home() {
 
     //realiza a requisição para api com axios para a rota listar usuarios.
     await axios
-      .get("http://localhost:8080/users?page=" + page)
+      .get("http://localhost:8080/users?page" + page)
       //acessa o then quando a api retornar status 200
       .then((response) => {
         //atribui os registros no state data
+        console.log(response.data.users);
         setData(response.data.users);
         //atribui a ultima pagina
         setLastPage(response.data.pagination.lastPage);
@@ -50,6 +54,13 @@ export default function Home() {
     getUsers();
   }, []);
 
+  const deleteUser = async (idUser) => {
+    if (window.confirm("Tem certeza que deseja apagar?")) console.log(idUser);
+    const response = await servDelete("http://localhost:8080/users/" + idUser);
+    setMessage(response);
+    getUsers(page);
+  };
+
   return (
     <>
       <Head>
@@ -58,68 +69,123 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
       <main>
-        <Link href={"/cadastrar"}>
-          <button type="button">Cadastrar</button>
-        </Link>
-        <h2>Listar Usuário</h2>
-        {message ? <p>{message}</p> : ""}
-        {data.map((user) => (
-          <div key={user.id}>
-            <spam>ID: {user.id}</spam>
-            <br />
-            <spam>Nome: {user.name}</spam>
-            <br />
-            <spam>E-mail: {user.email}</spam>
-            <br />
-            <Link href={`/visualizar/${user.id}`}>
-              <button type="button">Visualizar</button>
-            </Link>{" "}
-            <Link href={`/editar/${user.id}`}>
-              <button type="button">Editar</button>
-            </Link>{" "}
-            <button type="button">Apagar</button> <hr />
-            <br />
-            <hr />
+        <div>
+          <Navbar bg="dark" variant="dark">
+            <Container>
+              <Navbar.Toggle aria-controls="navbarScroll" />
+              <Navbar.Collapse id="navbarScroll">
+                <Nav
+                  className="me-auto my-2 my-lg-0"
+                  style={{ maxHeight: "100px" }}
+                  navbarScroll
+                >
+                  <Nav.Link href={"/cadastrar"}>
+                    <button className="btn btn-primary" type="button">
+                      Cadastrar
+                    </button>
+                  </Nav.Link>
+                </Nav>
+              </Navbar.Collapse>
+            </Container>
+          </Navbar>
+          <div>
+            <Form className="d-flex align-items-center d-flex flex-wrap p-2 ">
+              <h2>Listar Usuário</h2>
+            </Form>
           </div>
-        ))}
-        {page !== 1 ? (
-          <button type="button" onClick={() => getUsers(1)}>
-            Primeira
-          </button>
-        ) : (
+          {message ? <p>{message}</p> : ""}
+          {data.map((user) => (
+            <div key={user.id}>
+              <Form className="d-flex align-items-center d-flex flex-wrap p-2 ">
+                <Form.Label className="border bg-#582900 mx-1">
+                  ID: {user.id}
+                </Form.Label>
+                <br />
+                <Form.Label className="border bg-#582900 mx-1">
+                  Nome: {user.name}
+                </Form.Label>
+                <br />
+                <Form.Label className="border bg-#582900 mx-1">
+                  E-Mail: {user.email}
+                </Form.Label>
+                <br />
+                <Form.Label className="border bg-#582900 mx-1">
+                  Celular: {user.celular}
+                </Form.Label>
+                <br />
+                <Form.Label className="border bg-#582900 mx-1">
+                  Data de Nascimento: {user.nascimento}
+                </Form.Label>
+                <br />
+                <Form.Label className="border bg-#582900 mx-1">
+                  Endereço: {user.endereco}
+                </Form.Label>
+                <br />
+                <Form.Label className="border bg-#582900 mx-1">
+                  Sexo: {user.sexo}
+                </Form.Label>
+                <br />
+              </Form>
+              <Link href={`/visualizar/${user.id}`}>
+                <button className="btn btn-outline-info" type="button">
+                  Visualizar
+                </button>
+              </Link>{" "}
+              <Link href={`/editar/${user.id}`}>
+                <button className="btn btn-outline-success" type="button">
+                  Editar
+                </button>
+              </Link>{" "}
+              <button
+                className="btn btn-outline-danger"
+                type="button"
+                onClick={() => deleteUser(user.id)}
+              >
+                Apagar
+              </button>{" "}
+              <hr />
+            </div>
+          ))}
+          {page !== 1 ? (
+            <button type="button" onClick={() => getUsers(1)}>
+              Primeira
+            </button>
+          ) : (
+            <button type="button" disabled>
+              Primeira
+            </button>
+          )}{" "}
+          {page !== 1 ? (
+            <button type="button" onClick={() => getUsers(page - 1)}>
+              {page - 1}
+            </button>
+          ) : (
+            ""
+          )}{" "}
           <button type="button" disabled>
-            Primeira
-          </button>
-        )}{" "}
-        {page !== 1 ? (
-          <button type="button" onClick={() => getUsers(page - 1)}>
-            {page - 1}
-          </button>
-        ) : (
-          ""
-        )}{" "}
-        <button type="button" disabled>
-          {page}
-        </button>{" "}
-        {page + 1 <= lastPage ? (
-          <button type="button" onClick={() => getUsers(page + 1)}>
-            {page + 1}
-          </button>
-        ) : (
-          ""
-        )}{" "}
-        {page !== lastPage ? (
-          <button type="button" onClick={() => getUsers(lastPage)}>
-            Última
-          </button>
-        ) : (
-          <button type="button" disabled>
-            Última
-          </button>
-        )}{" "}
-        <br />
-        <br />
+            {page}
+          </button>{" "}
+          {page + 1 <= lastPage ? (
+            <button type="button" onClick={() => getUsers(page + 1)}>
+              {page + 1}
+            </button>
+          ) : (
+            ""
+          )}{" "}
+          {page !== lastPage ? (
+            <button type="button" onClick={() => getUsers(lastPage)}>
+              Última
+            </button>
+          ) : (
+            <button type="button" disabled>
+              Última
+            </button>
+          )}{" "}
+          <br />
+          <br />
+        </div>
       </main>
     </>
   );

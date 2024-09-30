@@ -1,11 +1,18 @@
 import Head from "next/head";
 import { useState } from "react";
 import axios from "axios";
+import Link from "next/link";
+import "bootstrap/dist/css/bootstrap.css";
+import { Container, Nav, Navbar, Form, Button } from "react-bootstrap";
 
 export default function Cadastrar() {
   const [data, setData] = useState({
     name: "",
     email: "",
+    celular: "",
+    nascimento: "",
+    endereco: "",
+    sexo: "",
   });
 
   const [message, setMessage] = useState("");
@@ -32,6 +39,10 @@ export default function Cadastrar() {
         setData({
           name: "",
           email: "",
+          celular: "",
+          nascimento: "",
+          endereco: "",
+          sexo: "",
         });
       })
       .catch((err) => {
@@ -53,39 +64,118 @@ export default function Cadastrar() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
       <main>
-        <Link href={"/"}>
-          <button type="button">Listar</button>
-        </Link>
+        <div>
+          <Navbar bg="dark" variant="dark">
+            <Container>
+              <Navbar.Toggle aria-controls="navbarScroll" />
+              <Navbar.Collapse id="navbarScroll">
+                <Nav
+                  className="me-auto my-2 my-lg-0"
+                  style={{ maxHeight: "100px" }}
+                  navbarScroll
+                >
+                  <Nav.Link href={"/"}>
+                    <Button className="btn btn-primary mx-1" type="button">
+                      Listar
+                    </Button>
+                  </Nav.Link>
+                </Nav>
+              </Navbar.Collapse>
+            </Container>
+          </Navbar>
+          <div>
+            <Form className="d-flex align-items-center d-flex flex-wrap p-2 ">
+              <h2>Cadastrar Usuário</h2>
+            </Form>
+          </div>
+          {message ? <p>{message}</p> : ""}
+          <Form
+            onSubmit={addUser}
+            className="d-flex flex-wrap align-items-center   p-3 mx-2  "
+          >
+            <Form.Group controlId="FormText" className="mx-1 p-1">
+              <Form.Label>Nome:</Form.Label>
+              <Form.Control
+                type="text"
+                name="name"
+                onChange={valueInput}
+                value={data.name}
+              />
+              <Form.Text className="text-muted">Digite seu Nome.</Form.Text>
+            </Form.Group>
+            <br />
 
-        <h2>Cadastrar Usuário</h2>
-
-        {message ? <p>{message}</p> : ""}
-
-        <form onSubmit={addUser}>
-          <lable>Nome: </lable>
-          <input
-            type="text"
-            name="name"
-            placeholder="Digite o nome"
-            onChange={valueInput}
-            value={data.name}
-          />
-          <br />
-          <br />
-          <lable>E-mail: </lable>
-          <input
-            type="email"
-            name="email"
-            placeholder="Digite o Email"
-            onChange={valueInput}
-            value={data.email}
-          />
-          <br />
-          <br />
-          <button type="submit">Enviar</button> <br />
-          <br />
-        </form>
+            <Form.Group controlId="FormEmail" className="mx-1 p-1">
+              <Form.Label>E-Mail:</Form.Label>
+              <Form.Control
+                type="email"
+                name="email"
+                placeholder="Exemplo@Email.com"
+                onChange={valueInput}
+                value={data.email}
+              />
+              <Form.Text className="text-muted">
+                Digite seu E-Mail válido.
+              </Form.Text>
+            </Form.Group>
+            <br />
+            <Form.Group controlId="FormTel" className="mx-1 p-1">
+              <Form.Label>Celular:</Form.Label>
+              <Form.Control
+                type="tel"
+                name="celular"
+                onChange={valueInput}
+                value={data.celular}
+              />
+              <Form.Text className="text-muted">
+                Digite seu número de Celular válido.
+              </Form.Text>
+            </Form.Group>
+            <br />
+            <Form.Group controlId="FormDate" className="mx-1 p-1">
+              <Form.Label>Data de Nascimento:</Form.Label>
+              <Form.Control
+                type="date"
+                name="nascimento"
+                onChange={valueInput}
+                value={data.nascimento}
+              />
+              <Form.Text className="text-muted">
+                Digite sua data de Nascimento
+              </Form.Text>
+            </Form.Group>
+            <br />
+            <Form.Group controlId="FormText">
+              <Form.Label>Endereço:</Form.Label>
+              <Form.Control
+                type="text"
+                name="endereco"
+                onChange={valueInput}
+                value={data.endereco}
+              />
+              <Form.Text className="text-muted">
+                Digite seu Endereço residencial
+              </Form.Text>
+            </Form.Group>
+            <br />
+            <Form.Group controlId="FormText" className="mx-1 p-1">
+              <Form.Label>Sexo:</Form.Label>
+              <Form.Control
+                type="text"
+                name="sexo"
+                onChange={valueInput}
+                value={data.sexo}
+              />
+              <Form.Text className="text-muted">Informe seu Sexo.</Form.Text>
+            </Form.Group>
+            <br />
+            <Button className="mx-2 p-1" variant="primary" type="submit">
+              Salvar
+            </Button>
+          </Form>
+        </div>
       </main>
     </>
   );

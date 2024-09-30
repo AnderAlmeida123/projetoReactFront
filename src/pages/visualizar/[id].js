@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.css";
+import { Container, Nav, Navbar, Form } from "react-bootstrap";
 
 export default function Visualizar() {
   //declara a variavel para receber o registro retornado da api
@@ -14,13 +16,13 @@ export default function Visualizar() {
 
   //recebe o parametro enviado na url
   const router = useRouter();
-  //console.log(router.query.id);
+  console.log(router.query.id);
   const [id] = useState(router.query.id);
   //cria a funçao com requisiçao para api
   const getUser = async () => {
     //retornar erro quando nao tiver o id do usuario
     if (id === undefined) {
-      setMessage("Erro, Usuário não encontrado!");
+      setMessage("Erro: Usuário não encontrado!");
       return;
     }
     //realiza a requisiçao para api com axios para a rota recuperar os usuarios
@@ -58,23 +60,72 @@ export default function Visualizar() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Link href={"/"}>
-          <button type="button">Listar</button>
-        </Link>
-        {""}
-        <Link href={`/editar/${data.id}`}>
-          <button type="button">Editar</button>
-        </Link>
-        {""}
-        <h2>Detalhes do Usuário</h2>
+        <div>
+          <Navbar bg="dark" variant="dark">
+            <Container>
+              <Navbar.Toggle aria-controls="navbarScroll" />
+              <Navbar.Collapse id="navbarScroll">
+                <Nav
+                  className="me-auto my-2 my-lg-0"
+                  style={{ maxHeight: "100px" }}
+                  navbarScroll
+                >
+                  <Link href={"/"}>
+                    <button className="btn btn-primary mx-1" type="button">
+                      Listar
+                    </button>
+                  </Link>
 
-        {message ? <p>{message}</p> : ""}
-        <span>ID: {data.id}</span>
-        <br />
-        <span>Nome: {data.name}</span>
-        <br />
-        <span>E-mail: {data.email}</span>
-        <br />
+                  <Link href={`/editar/${data.id}`}>
+                    <button className="btn btn-primary mx-1" type="button">
+                      Editar
+                    </button>
+                  </Link>
+                </Nav>
+              </Navbar.Collapse>
+            </Container>
+          </Navbar>
+          <div>
+            <Form className="d-flex align-items-center d-flex flex-wrap p-2 ">
+              <h2>Detalhes do Usuário</h2>
+            </Form>
+          </div>
+          {message ? <p>{message}</p> : ""}
+
+          <Form
+            onSubmit={getUser}
+            className="d-flex align-items-center; d-flex flex-wrap p-2 "
+          >
+            <Form.Label className="border bg-#582900 mx-1">
+              ID: {data.id}
+            </Form.Label>
+            <br />
+            <Form.Label className="border bg-#582900 mx-1">
+              Nome: {data.name}
+            </Form.Label>
+            <br />
+            <Form.Label className="border bg-#582900 mx-1">
+              E-Mail: {data.email}
+            </Form.Label>
+            <br />
+            <Form.Label className="border bg-#582900 mx-1">
+              Celular: {data.celular}
+            </Form.Label>
+            <br />
+            <Form.Label className="border bg-#582900 mx-1">
+              Data de Nascimento: {data.nascimento}
+            </Form.Label>
+            <br />
+            <Form.Label className="border bg-#582900 mx-1">
+              Endereço: {data.endereco}
+            </Form.Label>
+            <br />
+            <Form.Label className="border bg-#582900 mx-1">
+              Sexo: {data.sexo}
+            </Form.Label>
+            <br />
+          </Form>
+        </div>
       </main>
     </>
   );

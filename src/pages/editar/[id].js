@@ -3,6 +3,8 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import "bootstrap/dist/css/bootstrap.css";
+import { Navbar, Container, Nav, Form, Button } from "react-bootstrap";
 
 export default function Editar() {
   // declara uma nova variavel dados com state e atribui ao objeto
@@ -10,6 +12,10 @@ export default function Editar() {
     id: "",
     name: "",
     email: "",
+    celular: "",
+    nascimento: "",
+    endereco: "",
+    sexo: "",
   });
 
   //declara a variavel para receber a mensagem
@@ -34,7 +40,7 @@ export default function Editar() {
       //acessa o then quando a api retornar status 200
       .then((response) => {
         //atribuir o registro no state data
-        //   console.log(response.data.user);
+        console.log(response.data.user);
         setData(response.data.user);
       })
       //acessa o catch quando a api retornar erro
@@ -76,6 +82,8 @@ export default function Editar() {
       .put("http://localhost:8080/users", data, headers)
       .then((response) => {
         //acessa o then quando a api retornar o status 200
+        console.log(response.data.users);
+
         setMessage(response.data.mensagem);
       })
       .catch((err) => {
@@ -100,41 +108,124 @@ export default function Editar() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Link href={"/"}>
-          <button type="button">Listar</button>
-        </Link>
-        {""}
-        <Link href={`/visualizar/${data.id}`}>
-          <button type="button">Visualizar</button>
-        </Link>
-        {""}
+        <div className="App">
+          <Navbar className="App-header" bg="dark" variant="dark">
+            <Container>
+              <Navbar.Toggle aria-controls="navbarScroll" />
+              <Navbar.Collapse id="navbarScroll">
+                <Nav
+                  className="me-auto my-2 my-lg-0"
+                  style={{ maxHeight: "100px" }}
+                  navbarScroll
+                >
+                  <Link href={"/"}>
+                    <button className="btn btn-primary mx-1" type="button">
+                      Listar
+                    </button>
+                  </Link>
 
-        <h2>Editar Usuário</h2>
+                  <Link href={`/visualizar/${data.id}`}>
+                    <button className="btn btn-primary mx-1" type="button">
+                      Visualizar
+                    </button>
+                  </Link>
+                </Nav>
+              </Navbar.Collapse>
+            </Container>
+          </Navbar>
 
-        {message ? <p>{message}</p> : ""}
-        <form onSubmit={editUser}>
-          <input type="hidden" name="id" value={data.id} />
-          <label>Nome: </label>
-          <input
-            type="text"
-            name="name"
-            placeholder="Digite o nome"
-            onChange={valueInput}
-            value={data.name}
-          />{" "}
-          <br />
-          <hr />
-          <label>Email: </label>
-          <input
-            type="email"
-            name="email"
-            placeholder="Digite o E-mail"
-            onChange={valueInput}
-            value={data.email}
-          />{" "}
-          <br />
-          <button type="submit">Salvar</button>
-        </form>
+          <div>
+            <Form className="d-flex align-items-center d-flex flex-wrap p-2 ">
+              <h2>Editar Usuário</h2>
+            </Form>
+          </div>
+          {message ? <p>{message}</p> : ""}
+          <Form
+            onSubmit={editUser}
+            className="d-flex flex-wrap align-items-center   p-3 mx-2  "
+          >
+            <input type="hidden" name="id" value={data.id} />
+            <br />
+            <Form.Group controlId="FormText" className="mx-1 p-1">
+              <Form.Label className="col">Nome:</Form.Label>
+              <Form.Control
+                type="text"
+                name="name"
+                onChange={valueInput}
+                value={data.name}
+              />
+              <Form.Text className="text-muted">Digite seu Nome.</Form.Text>
+            </Form.Group>
+            <br />
+            <Form.Group controlId="FormEmail" className="mx-1 p-1">
+              <Form.Label>E-Mail:</Form.Label>
+              <Form.Control
+                type="email"
+                name="email"
+                placeholder="Exemplo@Email.com"
+                onChange={valueInput}
+                value={data.email}
+              />
+              <Form.Text className="text-muted">
+                Digite seu E-Mail válido.
+              </Form.Text>
+            </Form.Group>
+            <br />
+            <Form.Group controlId="FormTel" className="mx-1 p-1">
+              <Form.Label>Celular:</Form.Label>
+              <Form.Control
+                type="tel"
+                name="celular"
+                onChange={valueInput}
+                value={data.celular}
+              />
+              <Form.Text className="text-muted">
+                Digite seu número de Celular válido.
+              </Form.Text>
+            </Form.Group>
+            <br />
+            <Form.Group controlId="FormDate" className="mx-1 p-1">
+              <Form.Label>Data de Nascimento:</Form.Label>
+              <Form.Control
+                type="date"
+                name="nascimento"
+                onChange={valueInput}
+                value={data.nascimento}
+              />
+              <Form.Text className="text-muted">
+                Digite sua data de Nascimento
+              </Form.Text>
+            </Form.Group>
+            <br />
+            <Form.Group controlId="FormText">
+              <Form.Label>Endereço:</Form.Label>
+              <Form.Control
+                type="text"
+                name="endereco"
+                onChange={valueInput}
+                value={data.endereco}
+              />
+              <Form.Text className="text-muted">
+                Digite seu Endereço residencial
+              </Form.Text>
+            </Form.Group>
+            <br />
+            <Form.Group controlId="FormText" className="mx-1 p-1">
+              <Form.Label>Sexo:</Form.Label>
+              <Form.Control
+                type="text"
+                name="sexo"
+                onChange={valueInput}
+                value={data.sexo}
+              />
+              <Form.Text className="text-muted">Informe seu Sexo.</Form.Text>
+            </Form.Group>
+            <br />
+            <Button variant="primary" type="submit">
+              Salvar
+            </Button>
+          </Form>
+        </div>
       </main>
     </>
   );
